@@ -26,6 +26,7 @@ var UserComponent = (function () {
         this.postsService.getPosts().subscribe(function (posts) {
             _this.posts = posts;
         });
+        this.getPoints();
     }
     UserComponent.prototype.toggleHobbies = function () {
         this.showHobbies = this.showHobbies ? false : true;
@@ -35,6 +36,16 @@ var UserComponent = (function () {
     };
     UserComponent.prototype.deleteHobby = function (i) {
         this.hobbies.splice(i, 1);
+    };
+    UserComponent.prototype.addPoint = function (x, y) {
+        this.postsService.addPoint({ x: x, y: y });
+        //this.getPoints();
+    };
+    UserComponent.prototype.getPoints = function () {
+        var _this = this;
+        this.postsService.getPoints().subscribe(function (points) {
+            _this.points = points;
+        });
     };
     return UserComponent;
 }());

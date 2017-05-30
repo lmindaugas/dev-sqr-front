@@ -14,6 +14,7 @@ export class UserComponent {
     hobbies: string[]
     showHobbies: boolean;
     posts: Post[];
+    points: Point[];
 
     constructor(private postsService: PostsService) {
         this.name = 'Jame B';
@@ -28,6 +29,8 @@ export class UserComponent {
         this.postsService.getPosts().subscribe(posts => {
             this.posts = posts;
         })
+
+        this.getPoints();
     }
 
     toggleHobbies() {
@@ -42,6 +45,16 @@ export class UserComponent {
         this.hobbies.splice(i, 1);
     }
 
+    addPoint(x: number, y: number) {
+        this.postsService.addPoint({ x, y });
+        //this.getPoints();
+    }
+
+    getPoints() {
+        this.postsService.getPoints().subscribe(points => {
+            this.points = points;
+        })
+    }
 }
 
 interface Address {
@@ -55,4 +68,9 @@ interface Post {
     email: string;
     name: string;
     body: string;
+}
+
+interface Point {
+    x: Number;
+    y: Number;
 }

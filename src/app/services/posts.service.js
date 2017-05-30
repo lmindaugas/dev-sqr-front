@@ -11,14 +11,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
 require("rxjs/add/operator/map");
+require("rxjs/add/operator/toPromise");
 var PostsService = (function () {
     function PostsService(http) {
         this.http = http;
+        this.url = 'http://localhost:8090/';
+        this.headers = new Headers({ 'Content-Type': 'application/json' });
         console.log("Post service initialized");
     }
     PostsService.prototype.getPosts = function () {
         return this.http.get('https://jsonplaceholder.typicode.com/comments')
             .map(function (res) { return res.json(); });
+    };
+    PostsService.prototype.getPoints = function () {
+        return this.http.get('http://localhost:8090/points')
+            .map(function (res) { return res.json(); });
+    };
+    PostsService.prototype.addPoint = function (point) {
+        var url = this.url + "add?x=" + point.x + "&y=" + point.y;
+        return this.http
+            .put(url, JSON.stringify(point), { headers: this.headers })
+            .toPromise()
+            .then(function () { return point; })
+            .catch(this.handleError);
+        //this.http.put(url, JSON.stringify(point), {headers: this.headers})
+        //console.log(point.x + point.y);
+        //console.log(url);
+    };
+    PostsService.prototype.handleError = function (error) {
+        console.error('An error occurred', error); // for demo purposes only
+        return Promise.reject(error.message || error);
     };
     return PostsService;
 }());
