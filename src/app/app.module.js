@@ -8,8 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var forms_1 = require("@angular/forms");
+var http_1 = require("@angular/http");
 var app_component_1 = require("./app.component");
-var user_component_1 = require("./user.component");
+var user_component_1 = require("./components/user.component");
+//import { PostsService } from './services/posts.service';
 var AppModule = (function () {
     function AppModule() {
     }
@@ -17,7 +19,7 @@ var AppModule = (function () {
 }());
 AppModule = __decorate([
     core_1.NgModule({
-        imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
+        imports: [platform_browser_1.BrowserModule, forms_1.FormsModule, http_1.HttpModule],
         declarations: [app_component_1.AppComponent, user_component_1.UserComponent],
         bootstrap: [app_component_1.AppComponent]
     })
