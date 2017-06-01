@@ -11,7 +11,7 @@ var forms_1 = require("@angular/forms");
 var http_1 = require("@angular/http");
 var app_component_1 = require("./app.component");
 var user_component_1 = require("./components/user.component");
-//import { PostsService } from './services/posts.service';
+var ngx_pagination_1 = require("ngx-pagination");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -19,7 +19,12 @@ var AppModule = (function () {
 }());
 AppModule = __decorate([
     core_1.NgModule({
-        imports: [platform_browser_1.BrowserModule, forms_1.FormsModule, http_1.HttpModule],
+        imports: [
+            platform_browser_1.BrowserModule,
+            forms_1.FormsModule,
+            http_1.HttpModule,
+            ngx_pagination_1.NgxPaginationModule
+        ],
         declarations: [app_component_1.AppComponent, user_component_1.UserComponent],
         bootstrap: [app_component_1.AppComponent]
     })

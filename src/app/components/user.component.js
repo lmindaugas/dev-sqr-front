@@ -14,6 +14,7 @@ var UserComponent = (function () {
     function UserComponent(postsService) {
         var _this = this;
         this.postsService = postsService;
+        this.collection = [];
         this.name = 'Jame B';
         this.email = 'james@bombey.com';
         this.address = {
@@ -26,6 +27,10 @@ var UserComponent = (function () {
         this.postsService.getPosts().subscribe(function (posts) {
             _this.posts = posts;
         });
+        this.pointsPerPage = 10;
+        for (var i = 1; i <= 100; i++) {
+            this.collection.push("item " + i);
+        }
         this.getPoints();
     }
     UserComponent.prototype.toggleHobbies = function () {
@@ -39,13 +44,18 @@ var UserComponent = (function () {
     };
     UserComponent.prototype.addPoint = function (x, y) {
         this.postsService.addPoint({ x: x, y: y });
-        //this.getPoints();
     };
     UserComponent.prototype.getPoints = function () {
         var _this = this;
         this.postsService.getPoints().subscribe(function (points) {
             _this.points = points;
         });
+    };
+    UserComponent.prototype.fileChange = function (event) {
+        var fileList = event.target.files;
+        if (fileList.length > 0) {
+            this.postsService.uploadFile(fileList[0]);
+        }
     };
     return UserComponent;
 }());

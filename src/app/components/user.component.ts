@@ -15,6 +15,8 @@ export class UserComponent {
     showHobbies: boolean;
     posts: Post[];
     points: Point[];
+    collection = [];
+    pointsPerPage: number;
 
     constructor(private postsService: PostsService) {
         this.name = 'Jame B';
@@ -29,6 +31,10 @@ export class UserComponent {
         this.postsService.getPosts().subscribe(posts => {
             this.posts = posts;
         })
+        this.pointsPerPage = 10;
+        for (let i = 1; i <= 100; i++) {
+            this.collection.push(`item ${i}`);
+        }
 
         this.getPoints();
     }
@@ -47,7 +53,7 @@ export class UserComponent {
 
     addPoint(x: number, y: number) {
         this.postsService.addPoint({ x, y });
-        //this.getPoints();
+
     }
 
     getPoints() {
@@ -55,6 +61,14 @@ export class UserComponent {
             this.points = points;
         })
     }
+
+    fileChange(event: any) {
+        let fileList: FileList = event.target.files;
+        if (fileList.length > 0) {
+            this.postsService.uploadFile(fileList[0]);
+        }
+    }
+
 }
 
 interface Address {
@@ -70,7 +84,7 @@ interface Post {
     body: string;
 }
 
-interface Point {
+export interface Point {
     x: Number;
     y: Number;
 }

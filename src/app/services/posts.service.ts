@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Headers, Http, RequestOptions } from '@angular/http';
+import { Observable } from "rxjs/Observable";
 import { Point } from "../components/user.component";
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/observable/throw';
 
 @Injectable()
 export class PostsService {
-
-    private url = 'http://localhost:8090/'
-
-    private headers = new Headers({ 'Content-Type': 'application/json' });
 
     constructor(private http: Http) {
         console.log("Post service initialized")
@@ -27,22 +26,39 @@ export class PostsService {
 
     addPoint(point: Point) {
 
-        let url = `${this.url}add?x=${point.x}&y=${point.y}`;
+        let url = `http://localhost:8090/add?x=${point.x}&y=${point.y}`;
+
+        let headers = new Headers();
 
         return this.http
-            .put(url, JSON.stringify(point), { headers: this.headers })
+            .put(url, JSON.stringify(point), { headers: headers })
             .toPromise()
             .then(() => point)
             .catch(this.handleError);
-
-        //this.http.put(url, JSON.stringify(point), {headers: this.headers})
-
-        //console.log(point.x + point.y);
-        //console.log(url);
     }
 
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error); // for demo purposes only
         return Promise.reject(error.message || error);
     }
+
+    uploadFile(file: File) {
+
+        let url = `http://localhost:8090/upload`;
+
+        let formData: FormData = new FormData();
+        formData.append('file', file, file.name);
+        let headers = new Headers();
+        // headers.append('Content-Type', 'jsonmultipart/form-data');
+        // headers.append('Accept', 'text/html');
+        let options = new RequestOptions({ headers: headers });
+        this.http.put(url, formData, options)
+            .map(res => res.toString())
+            .catch(error => Observable.throw(error))
+            .subscribe(
+            data => console.log('success'),
+            error => console.log(error)
+            )
+    }
+
 }

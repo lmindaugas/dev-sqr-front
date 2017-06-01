@@ -5,10 +5,15 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { UserComponent } from './components/user.component';
-//import { PostsService } from './services/posts.service';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
-  imports: [BrowserModule, FormsModule, HttpModule],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpModule,
+    NgxPaginationModule
+  ],
   declarations: [AppComponent, UserComponent],
   bootstrap: [AppComponent]
 })

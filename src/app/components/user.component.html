@@ -30,18 +30,32 @@
     <label><strong>city: </strong></label>
     <input type="text" name="address.state" [(ngModel)]="address.state" /><br />
 </form>
-<p>
 <form>
     <input type="number" name="xVal" #xVal/>
     <input type="number" name="yVal" #yVal/>
     <button (click)="addPoint(xVal.value, yVal.value)">+</button>
 </form>
+
+<div>
+    <input type="file" (change)="fileChange($event)" placeholder="Upload file" accept=".txt">
+</div>
+<hr />
+<div>Paginated Points</div>
+<div class="row">
+    <div class="medium-8 medium-offset-2 columns">
+        <h2 class="subheader"></h2>
+        <ul>
+            <li *ngFor="let point of points | paginate: { itemsPerPage: pointsPerPage, currentPage: p }">({{ point.x }},{{ point.y }})</li>
+        </ul>
+
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+</div>
 <hr />
 <h3>Points</h3>
 <div *ngFor="let point of points">
     <h4>({{point.x}}, {{point.y}})</h4>
 </div>
-<!--<div>{{points}}</div> -->
 <hr />
 <h3> Posts </h3>
 <div *ngFor="let post of posts">
