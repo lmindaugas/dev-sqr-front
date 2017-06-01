@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http, RequestOptions } from '@angular/http';
+import { Headers, Http, RequestOptions, ResponseContentType } from '@angular/http';
 import { Observable } from "rxjs/Observable";
 import { Point } from "../components/user.component";
 import 'rxjs/add/operator/map';
@@ -25,7 +25,6 @@ export class PostsService {
     }
 
     addPoint(point: Point) {
-
         let url = `http://localhost:8090/add?x=${point.x}&y=${point.y}`;
 
         let headers = new Headers();
@@ -37,13 +36,31 @@ export class PostsService {
             .catch(this.handleError);
     }
 
+    deletePoint(point: Point) {
+
+        console.log("send request: " + point.x + point.y);
+
+        let url = `http://localhost:8090/remove?x=${point.x}&y=${point.y}`;
+        let headers = new Headers();
+        let options = new RequestOptions({ headers: headers });
+
+        this.http.delete(url, options)
+            .toPromise()
+            .catch(this.handleError);
+
+        // return this.http
+        //     .delete(url, JSON.stringify(point), options)
+        //     .toPromise()
+        //     .then(() => point)
+        //     .catch(this.handleError);
+    }
+
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error); // for demo purposes only
         return Promise.reject(error.message || error);
     }
 
     uploadFile(file: File) {
-
         let url = `http://localhost:8090/upload`;
 
         let formData: FormData = new FormData();

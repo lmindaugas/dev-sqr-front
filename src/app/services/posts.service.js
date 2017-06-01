@@ -37,6 +37,20 @@ var PostsService = (function () {
             .then(function () { return point; })
             .catch(this.handleError);
     };
+    PostsService.prototype.deletePoint = function (point) {
+        console.log("send request: " + point.x + point.y);
+        var url = "http://localhost:8090/remove?x=" + point.x + "&y=" + point.y;
+        var headers = new http_1.Headers();
+        var options = new http_1.RequestOptions({ headers: headers });
+        this.http.delete(url, options)
+            .toPromise()
+            .catch(this.handleError);
+        // return this.http
+        //     .delete(url, JSON.stringify(point), options)
+        //     .toPromise()
+        //     .then(() => point)
+        //     .catch(this.handleError);
+    };
     PostsService.prototype.handleError = function (error) {
         console.error('An error occurred', error); // for demo purposes only
         return Promise.reject(error.message || error);
