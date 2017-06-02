@@ -27,8 +27,13 @@ var UserComponent = (function () {
     };
     UserComponent.prototype.saveList = function (name) {
         var _this = this;
-        this.listService.save(name).subscribe(function (list) { if (_this.lists.indexOf(name) == -1)
-            _this.lists.push(name); }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.loadLists(); });
+        if (name) {
+            this.listService.save(name).subscribe(function (list) { if (_this.lists.indexOf(name) == -1)
+                _this.lists.push(name); }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.toast("List saved!"); });
+        }
+        else {
+            this.toast("List name is not valid!");
+        }
     };
     UserComponent.prototype.removeList = function (list, i) {
         var _this = this;

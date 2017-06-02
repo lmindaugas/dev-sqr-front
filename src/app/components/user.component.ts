@@ -21,7 +21,7 @@ export class UserComponent implements OnInit {
     constructor(private pointsService: PointsService,
         private squareService: SquareService,
         private listService: ListService) {
-            
+
         this.pointsPerPage = 10
 
         this.validation = new PointValidation;
@@ -34,11 +34,15 @@ export class UserComponent implements OnInit {
     }
 
     saveList(name: string) {
-        this.listService.save(name).subscribe(
-            list => { if (this.lists.indexOf(name) == -1) this.lists.push(name) },
-            error => this.toast('Error: ' + error),
-            () => this.loadLists()
-        );
+        if (name!) {
+            this.listService.save(name).subscribe(
+                list => { if (this.lists.indexOf(name) == -1) this.lists.push(name) },
+                error => this.toast('Error: ' + error),
+                () => this.toast("List saved!")
+            );
+        } else {
+            this.toast("List name is not valid!")
+        }
     }
 
     removeList(list: string, i: number) {
@@ -73,7 +77,7 @@ export class UserComponent implements OnInit {
         );
     }
 
-    clearPoints(){
+    clearPoints() {
         this.pointsService.clear().subscribe(
             point => this.points = [],
             error => this.toast('Error: ' + error),
