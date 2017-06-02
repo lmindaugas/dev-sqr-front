@@ -12,6 +12,9 @@ var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
 var Observable_1 = require("rxjs/Observable");
 require("rxjs/add/operator/map");
+require("rxjs/add/operator/catch");
+require("rxjs/add/operator/toPromise");
+require("rxjs/add/observable/throw");
 var PointsService = (function () {
     function PointsService(http) {
         this.http = http;
@@ -20,7 +23,7 @@ var PointsService = (function () {
         var url = 'http://localhost:8090/points';
         return this.http.get(url)
             .map(function (res) { return res.json(); })
-            .catch(function (error) { return Observable_1.Observable.throw(error.json().error || 'Server error'); });
+            .catch(function (error) { return Observable_1.Observable.throw('error: ' + error); });
     };
     PointsService.prototype.add = function (point) {
         var url = "http://localhost:8090/add?x=" + point.x + "&y=" + point.y;
@@ -33,7 +36,13 @@ var PointsService = (function () {
         var url = "http://localhost:8090/remove?x=" + point.x + "&y=" + point.y;
         return this.http.delete(url)
             .map(function (res) { return res.text(); })
-            .catch(function (error) { return Observable_1.Observable.throw('Server error'); }); // errors if any
+            .catch(function (error) { return Observable_1.Observable.throw('error: ' + error); }); // errors if any
+    };
+    PointsService.prototype.clear = function () {
+        var url = "http://localhost:8090/clear";
+        return this.http.delete(url)
+            .map(function (res) { return res.text(); })
+            .catch(function (error) { return Observable_1.Observable.throw('error: ' + error); }); // errors if any
     };
     PointsService.prototype.upload = function (file) {
         var url = "http://localhost:8090/upload";

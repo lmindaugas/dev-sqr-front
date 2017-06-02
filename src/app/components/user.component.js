@@ -9,34 +9,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var posts_service_1 = require("../services/posts.service");
 var points_service_1 = require("../services/points.service");
 var square_service_1 = require("../services/square.service");
+var list_service_1 = require("../services/list.service");
 var UserComponent = (function () {
-    function UserComponent(postsService, pointsService, squareService) {
-        this.postsService = postsService;
+    function UserComponent(pointsService, squareService, listService) {
         this.pointsService = pointsService;
         this.squareService = squareService;
-        // mock
-        this.list = ['list 1', 'list 2', 'list 2'];
-        this.lists = new Map;
-        this.showLists = true;
+        this.listService = listService;
         this.pointsPerPage = 10;
         this.validation = new PointValidation;
     }
     UserComponent.prototype.ngOnInit = function () {
         this.loadPoints();
         this.loadSquares();
+        this.loadLists();
     };
     UserComponent.prototype.saveList = function (name) {
         var _this = this;
-        this.lisService.add(point).subscribe(function (point) { return _this.points = point; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+        this.listService.save(name).subscribe(function (list) { if (_this.lists.indexOf(name) == -1)
+            _this.lists.push(name); }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.loadLists(); });
     };
-    UserComponent.prototype.deleteList = function (i) {
+    UserComponent.prototype.removeList = function (list, i) {
+        var _this = this;
+        this.listService.remove(list).subscribe(function (list) { return _this.lists.splice(i, 1, list); }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.loadLists(); });
+    };
+    UserComponent.prototype.loadList = function (list) {
+        var _this = this;
+        this.listService.load(list)
+            .subscribe(function (points) { return _this.points = points; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+    };
+    UserComponent.prototype.loadLists = function () {
+        var _this = this;
+        this.listService.get()
+            .subscribe(function (lists) { return _this.lists = lists; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.toast('Lists loaded!'); });
     };
     UserComponent.prototype.removePoint = function (point, id) {
         var _this = this;
         this.pointsService.remove(point).subscribe(function (point) { return _this.points = point; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+    };
+    UserComponent.prototype.clearPoints = function () {
+        var _this = this;
+        this.pointsService.clear().subscribe(function (point) { return _this.points = []; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
     };
     UserComponent.prototype.fileUpload = function (event) {
         var _this = this;
@@ -48,12 +62,12 @@ var UserComponent = (function () {
     UserComponent.prototype.loadPoints = function () {
         var _this = this;
         this.pointsService.get()
-            .subscribe(function (points) { return _this.points = points; }, function (error) { return console.error('Error: ' + error); }, function () { return console.log('Loaded!'); });
+            .subscribe(function (points) { return _this.points = points; }, function (error) { return console.error('Error: ' + error); }, function () { return console.log('Points loaded!'); });
     };
     UserComponent.prototype.loadSquares = function () {
         var _this = this;
         this.squareService.get()
-            .subscribe(function (squares) { return _this.squares = squares; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.toast('Loaded!'); });
+            .subscribe(function (squares) { return _this.squares = squares; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.toast('Squares loaded!'); });
     };
     UserComponent.prototype.addPoint = function (x, y) {
         var _this = this;
@@ -88,11 +102,11 @@ UserComponent = __decorate([
         moduleId: module.id,
         selector: 'user',
         templateUrl: 'user.component.html',
-        providers: [posts_service_1.PostsService, points_service_1.PointsService, square_service_1.SquareService]
+        providers: [points_service_1.PointsService, square_service_1.SquareService, list_service_1.ListService]
     }),
-    __metadata("design:paramtypes", [posts_service_1.PostsService,
-        points_service_1.PointsService,
-        square_service_1.SquareService])
+    __metadata("design:paramtypes", [points_service_1.PointsService,
+        square_service_1.SquareService,
+        list_service_1.ListService])
 ], UserComponent);
 exports.UserComponent = UserComponent;
 var PointValidation = (function () {

@@ -1,57 +1,27 @@
-<!--<h1>{{name}}</h1>
-<h3>Email: {{email}}</h3>
-<h3>street: {{address.street}}</h3>
-<h3>city: {{address.city}}</h3>
-<h3>state: {{address.state}}</h3>
-<button (click)="toggleHobbies()">{{showHobbies?"Hide hobbies":"Show hobbies"}}</button>
-<div *ngIf="showHobbies">
-    <h3>Hobbies</h3>
-    <ul>
-        <li *ngFor="let hobby of hobbies; let i = index">
-            {{hobby}}
-            <button (click)="deleteHobby()">x</button>
-        </li>
-    </ul>
-    <form (submit)="addHobby(hobby.value)">
-        <label>Add hobby: </label><br />
-        <input type="hobby" name="hobby" #hobby /> <br/>
-    </form>
-</div>
-<hr />-->
-<!--<form>
-    <label><strong>name: </strong></label>
-    <input type="text" name="name" [(ngModel)]="name" /> <br/>
-    <label><strong>email: </strong></label>
-    <input type="text" name="email" [(ngModel)]="email" /> <br/>
-    <label><strong>street: </strong></label>
-    <input type="text" name="address.street" [(ngModel)]="address.street" /><br />
-    <label><strong>street: </strong></label>
-    <input type="text" name="address.city" [(ngModel)]="address.city" /><br />
-    <label><strong>city: </strong></label>
-    <input type="text" name="address.state" [(ngModel)]="address.state" /><br />
-</form>-->
-
+<button (click)="clearPoints()">clear</button>
 <form>
     <input type="file" (change)="fileUpload($event)" placeholder="import" accept=".txt">
 </form>
 
 <br />
-<div *ngIf="showLists">
+<div>
     <h3><strong>Lists</strong></h3><br />
-    <input type="text" name="ls" #ls/>
-    <button (click)="saveList(ls.value)">save</button>
+    <input type="text" name="text" #text/>
+    <button (click)="saveList(text.value)">save list</button>
     <ul>
-        <li *ngFor="let item of list; let i = index">
-            <span (click)="loadList()">{{item}}</span>
-            <button (click)="deleteList()">x</button>
+        <li *ngFor="let list of lists; let i = index">
+            {{list}}
+            <button (click)="loadList(list)">load</button>
+            <button (click)="removeList(list)">delete</button>
         </li>
     </ul>
+
 </div>
 
 <br />
 <form>
-    <input type="number" name="x" #xVal/>
-    <input type="number" name="y" #yVal/>
+    <input type="number" name="x" #x/>
+    <input type="number" name="y" #y/>
     <button (click)="addPoint(x.valueAsNumber, y.valueAsNumber)">+</button>
 </form>
 
@@ -70,18 +40,3 @@
     <li *ngFor="let square of squares | paginate: { itemsPerPage: pointsPerPage, currentPage: p2, id: 'squares-pag' }"> {{square}} </li>
 </ul>
 <pagination-controls (pageChange)="p2 = $event" id="squares-pag"></pagination-controls>
-
-<!--<hr />
-<h3>Points</h3>
-<div *ngFor="let point of points">
-    <h4>({{point.x}}, {{point.y}})</h4>
-</div>-->
-
-<!--<hr />
-<h3> Posts </h3>
-<div *ngFor="let post of posts">
-    <h4>{{post.id}}</h4>
-    <h4>{{post.email}}</h4>
-    <h4>{{post.name}}</h4>
-    <h4>{{post.body}}</h4>
-</div>-->

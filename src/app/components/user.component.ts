@@ -1,36 +1,27 @@
 import { Component, OnInit, OnChanges } from '@angular/core';
-import { PostsService } from '../services/posts.service';
 import { PointsService, Point } from '../services/points.service';
 import { SquareService } from "../services/square.service";
+import { ListService } from "../services/list.service";
 
 
 @Component({
     moduleId: module.id,
     selector: 'user',
     templateUrl: 'user.component.html',
-    providers: [PostsService, PointsService, SquareService]
+    providers: [PointsService, SquareService, ListService]
 })
 export class UserComponent implements OnInit {
 
     validation: PointValidation;
-    showLists: boolean
     points: Point[]
     squares: string[]
     lists: string[];
-    list: string[]
     pointsPerPage: number
 
-    constructor(private postsService: PostsService,
-                private pointsService: PointsService,
-                private squareService: SquareService) {
-
-        // mock
-        this.list = ['list 1', 'list 2', 'list 2']
-
-        this.lists = new Map
-
-        this.showLists = true
-
+    constructor(private pointsService: PointsService,
+        private squareService: SquareService,
+        private listService: ListService) {
+            
         this.pointsPerPage = 10
 
         this.validation = new PointValidation;
@@ -39,22 +30,52 @@ export class UserComponent implements OnInit {
     ngOnInit(): void {
         this.loadPoints()
         this.loadSquares();
+        this.loadLists();
     }
 
     saveList(name: string) {
-        this.lisService.add(point).subscribe(
-                point => this.points = point,
-                error => this.toast('Error: ' + error),
-                () => this.update()
-            );    
+        this.listService.save(name).subscribe(
+            list => { if (this.lists.indexOf(name) == -1) this.lists.push(name) },
+            error => this.toast('Error: ' + error),
+            () => this.loadLists()
+        );
     }
 
-    deleteList(i: number) {
+    removeList(list: string, i: number) {
+        this.listService.remove(list).subscribe(
+            list => this.lists.splice(i, 1, list),
+            error => this.toast('Error: ' + error),
+            () => this.loadLists()
+        );
+    }
+
+    loadList(list: string) {
+        this.listService.load(list)
+            .subscribe(
+            points => this.points = points,
+            error => this.toast('Error: ' + error),
+            () => this.update());
+    }
+
+    loadLists() {
+        this.listService.get()
+            .subscribe(
+            lists => this.lists = lists,
+            error => this.toast('Error: ' + error),
+            () => this.toast('Lists loaded!'));
     }
 
     removePoint(point: Point, id: number) {
         this.pointsService.remove(point).subscribe(
             point => this.points = point,
+            error => this.toast('Error: ' + error),
+            () => this.update()
+        );
+    }
+
+    clearPoints(){
+        this.pointsService.clear().subscribe(
+            point => this.points = [],
             error => this.toast('Error: ' + error),
             () => this.update()
         );
@@ -76,16 +97,16 @@ export class UserComponent implements OnInit {
             .subscribe(
             points => this.points = points,
             error => console.error('Error: ' + error),
-            () => console.log('Loaded!')
+            () => console.log('Points loaded!')
             );
     }
 
-    loadSquares(){
+    loadSquares() {
         this.squareService.get()
             .subscribe(
             squares => this.squares = squares,
             error => this.toast('Error: ' + error),
-            () => this.toast('Loaded!')
+            () => this.toast('Squares loaded!')
             );
     }
 

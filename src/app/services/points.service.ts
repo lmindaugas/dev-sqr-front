@@ -3,6 +3,9 @@ import { Headers, Response, RequestOptions, Http } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/observable/throw';
 
 
 @Injectable()
@@ -12,11 +15,12 @@ export class PointsService {
     }
 
     get(): Observable<Point[]> {
+
         let url = 'http://localhost:8090/points';
 
         return this.http.get(url)
             .map(res => res.json())
-            .catch(error => Observable.throw(error.json().error || 'Server error'));
+            .catch(error => Observable.throw('error: ' + error));
     }
 
     add(point: Point): Observable<Point[]> {
@@ -33,7 +37,15 @@ export class PointsService {
 
         return this.http.delete(url)
             .map((res: Response) => res.text())
-            .catch((error: any) => Observable.throw('Server error')); // errors if any
+            .catch((error: any) => Observable.throw('error: ' + error)); // errors if any
+    }
+
+    clear()  {
+        let url = `http://localhost:8090/clear`;
+
+        return this.http.delete(url)
+            .map((res: Response) => res.text())
+            .catch((error: any) => Observable.throw('error: ' + error)); // errors if any
     }
 
     upload(file: File) {

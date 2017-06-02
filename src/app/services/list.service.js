@@ -20,7 +20,13 @@ var ListService = (function () {
         var url = 'http://localhost:8090/lists';
         return this.http.get(url)
             .map(function (res) { return res.json(); })
-            .catch(function (error) { return Observable_1.Observable.throw(error.json().error || 'Server error'); });
+            .catch(function (error) { return Observable_1.Observable.throw('error: ' + error); });
+    };
+    ListService.prototype.load = function (list) {
+        var url = "http://localhost:8090/list?list=" + list;
+        return this.http.get(url)
+            .map(function (res) { return res.json(); })
+            .catch(function (error) { return Observable_1.Observable.throw('error: ' + error); });
     };
     ListService.prototype.save = function (list) {
         var url = "http://localhost:8090/save?list=" + list;
@@ -29,21 +35,12 @@ var ListService = (function () {
             .map(function (res) { return res.text; })
             .catch(function (error) { return Observable_1.Observable.throw("error:" + error); });
     };
-    ListService.prototype.remove = function (point) {
-        var url = "http://localhost:8090/remove?x=" + point.x + "&y=" + point.y;
+    ListService.prototype.remove = function (list) {
+        console.log("service: " + list);
+        var url = "http://localhost:8090/removeList?list=" + list;
         return this.http.delete(url)
             .map(function (res) { return res.text(); })
             .catch(function (error) { return Observable_1.Observable.throw('Server error'); }); // errors if any
-    };
-    ListService.prototype.upload = function (file) {
-        var url = "http://localhost:8090/upload";
-        var formData = new FormData();
-        formData.append('file', file, file.name);
-        var headers = new http_1.Headers();
-        var options = new http_1.RequestOptions({ headers: headers });
-        return this.http.post(url, formData, options)
-            .map(function (res) { return res.text; })
-            .catch(function (error) { return Observable_1.Observable.throw("error: " + error); });
     };
     return ListService;
 }());
@@ -52,10 +49,4 @@ ListService = __decorate([
     __metadata("design:paramtypes", [http_1.Http])
 ], ListService);
 exports.ListService = ListService;
-var Point = (function () {
-    function Point() {
-    }
-    return Point;
-}());
-exports.Point = Point;
 //# sourceMappingURL=list.service.js.map
