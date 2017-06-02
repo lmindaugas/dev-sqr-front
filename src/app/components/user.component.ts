@@ -1,137 +1,151 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnChanges } from '@angular/core';
 import { PostsService } from '../services/posts.service';
+import { PointsService, Point } from '../services/points.service';
+import { SquareService } from "../services/square.service";
+
 
 @Component({
     moduleId: module.id,
     selector: 'user',
     templateUrl: 'user.component.html',
-    providers: [PostsService]
+    providers: [PostsService, PointsService, SquareService]
 })
-export class UserComponent {
-    // name: string;
-    // email: string;
-    // address: Address
-    // hobbies: string[]
-    // showHobbies: boolean;
-    // posts: Post[];
-    showLists: boolean;
-    lists: Map<string, Point[]>
-    list: string[];
-    points: Point[];
-    pointsPerPage: number;
+export class UserComponent implements OnInit {
 
-    constructor(private postsService: PostsService) {
-        // this.name = 'Jame B';
-        // this.email = 'james@bombey.com';
-        // this.address = {
-        //     street: '12 main street',
-        //     city: 'boston',
-        //     state: 'MA'
-        // }
-        // this.hobbies = ['Music', 'Movies', 'Sport'];
-        // this.showHobbies = false;
-        // this.postsService.getPosts().subscribe(posts => {
-        //     this.posts = posts;
-        // })
+    validation: PointValidation;
+    showLists: boolean
+    points: Point[]
+    squares: string[]
+    lists: string[];
+    list: string[]
+    pointsPerPage: number
 
-        this.list = ['list 1', 'list 2', 'list 2'];
+    constructor(private postsService: PostsService,
+                private pointsService: PointsService,
+                private squareService: SquareService) {
 
-        this.lists = new Map;
+        // mock
+        this.list = ['list 1', 'list 2', 'list 2']
 
-        this.showLists = true;
+        this.lists = new Map
 
-        this.pointsPerPage = 10;
+        this.showLists = true
 
-        this.getPoints();
+        this.pointsPerPage = 10
+
+        this.validation = new PointValidation;
     }
 
-    // toggleHobbies() {
-    //     this.showHobbies = this.showHobbies ? false : true;
-    // }
-
-    // addHobby(hobby: string) {
-    //     this.hobbies.push(hobby);
-    // }
-
-    // deleteHobby(i: number) {
-    //     this.hobbies.splice(i, 1);
-    // }
+    ngOnInit(): void {
+        this.loadPoints()
+        this.loadSquares();
+    }
 
     saveList(name: string) {
-
-        this.list.push(name);
-
-        this.lists.set(name, this.points);
-
-        console.log("list of map: " + this.lists.size);        
-
-        // this.lists.forEach((key: string, value: Point[]) => {
-        //     console.log(key, value);
-        // });
+        this.lisService.add(point).subscribe(
+                point => this.points = point,
+                error => this.toast('Error: ' + error),
+                () => this.update()
+            );    
     }
 
     deleteList(i: number) {
-        //this.lists.(i, 1);
     }
 
-    addPoint(x: number, y: number) {
-
-        // send to rest
-        this.postsService.addPoint({ x, y });
-
-        // add to the current list
-        //this.points.splice(0, 1, {x, y});
-        this.points.push({ x, y });
-
-        console.log("point added: " + "(" + x + "," + y + ")")
-        this.points.forEach(element => {
-            console.log("all points: " + "(" + element.x + ", " + element.y + ")");
-        });
+    removePoint(point: Point, id: number) {
+        this.pointsService.remove(point).subscribe(
+            point => this.points = point,
+            error => this.toast('Error: ' + error),
+            () => this.update()
+        );
     }
 
-    deletePoint(p: Point, id: number) {
-
-        // delete a point        
-        let index = this.points.indexOf(p);
-        let point: Point = this.points.splice(index, 1)[0];
-
-        // send to rest
-        this.postsService.deletePoint(p);
-
-        console.log("deleted point index: " + index);
-        console.log("point deleted: " + "(" + p.x + "," + p.y + ")")
-    }
-
-    getPoints() {
-        this.postsService.getPoints().subscribe(points => {
-            this.points = points;
-        })
-    }
-
-    fileChange(event: any) {
-        let fileList: FileList = event.target.files;
-        if (fileList.length > 0) {
-            this.postsService.uploadFile(fileList[0]);
+    fileUpload(event: any) {
+        let files: FileList = event.target.files;
+        if (files.length > 0) {
+            this.pointsService.upload(files[0]).subscribe(
+                point => this.points = point,
+                error => this.toast('Error: ' + error),
+                () => this.update()
+            );
         }
     }
 
+    loadPoints() {
+        this.pointsService.get()
+            .subscribe(
+            points => this.points = points,
+            error => console.error('Error: ' + error),
+            () => console.log('Loaded!')
+            );
+    }
+
+    loadSquares(){
+        this.squareService.get()
+            .subscribe(
+            squares => this.squares = squares,
+            error => this.toast('Error: ' + error),
+            () => this.toast('Loaded!')
+            );
+    }
+
+    addPoint(x: number, y: number) {
+        let point = { x, y };
+
+        if (isNaN(point.x) || isNaN(point.x)) {
+            this.toast("Invalid point argument!")
+        } else if (this.validation.isLimitExceeded(this.points)) {
+            this.toast("Point limits exceeded!")
+        } else if (!this.validation.isInRange(point)) {
+            this.toast("only range -5000 to 5000 is accepted!")
+        } else if (this.validation.containDuplicate(point, this.points)) {
+            this.toast("duplicates are not allowed!")
+        } else {
+            this.pointsService.add(point).subscribe(
+                point => this.points = point,
+                error => this.toast('Error: ' + error),
+                () => this.update()
+            );
+        }
+    }
+
+    toast(message: string) {
+        console.log(message);
+    }
+
+    update() {
+        this.loadPoints()
+        this.loadSquares()
+    }
 }
 
-// interface Address {
-//     street: string;
-//     city: string;
-//     state: string;
-// }
+class PointValidation {
 
-// interface Post {
-//     id: number;
-//     email: string;
-//     name: string;
-//     body: string;
-// }
+    public static readonly MAX_POINTS_AVAILABLE = 10000;
+    public static readonly MIN_RANGE_VALUE = -5000;
+    public static readonly MAX_RANGE_VALUE = 5000;
 
-export interface Point {
-    x: Number;
-    y: Number;
+    isInRange(point: Point) {
+        let xValid: boolean = point.x <= PointValidation.MAX_RANGE_VALUE
+            && point.x >= PointValidation.MIN_RANGE_VALUE;
+        let yValid: boolean = point.y <= PointValidation.MAX_RANGE_VALUE
+            && point.y >= PointValidation.MIN_RANGE_VALUE;
+        return xValid && yValid;
+    }
+
+    isLimitExceeded(points: Point[]) {
+        return points.length > PointValidation.MAX_POINTS_AVAILABLE
+    }
+
+    containDuplicate(point: Point, points: Point[]) {
+        let res: boolean = false;
+        points.forEach(p => {
+            if (p.x == point.x && p.y == point.y) {
+                res = true;
+            }
+        });
+        return res;
+        // return points.indexOf(point) > -1
+    }
 }
 

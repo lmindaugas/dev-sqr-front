@@ -10,78 +10,76 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var posts_service_1 = require("../services/posts.service");
+var points_service_1 = require("../services/points.service");
+var square_service_1 = require("../services/square.service");
 var UserComponent = (function () {
-    function UserComponent(postsService) {
-        // this.name = 'Jame B';
-        // this.email = 'james@bombey.com';
-        // this.address = {
-        //     street: '12 main street',
-        //     city: 'boston',
-        //     state: 'MA'
-        // }
-        // this.hobbies = ['Music', 'Movies', 'Sport'];
-        // this.showHobbies = false;
-        // this.postsService.getPosts().subscribe(posts => {
-        //     this.posts = posts;
-        // })
+    function UserComponent(postsService, pointsService, squareService) {
         this.postsService = postsService;
+        this.pointsService = pointsService;
+        this.squareService = squareService;
+        // mock
         this.list = ['list 1', 'list 2', 'list 2'];
         this.lists = new Map;
         this.showLists = true;
         this.pointsPerPage = 10;
-        this.getPoints();
+        this.validation = new PointValidation;
     }
-    // toggleHobbies() {
-    //     this.showHobbies = this.showHobbies ? false : true;
-    // }
-    // addHobby(hobby: string) {
-    //     this.hobbies.push(hobby);
-    // }
-    // deleteHobby(i: number) {
-    //     this.hobbies.splice(i, 1);
-    // }
+    UserComponent.prototype.ngOnInit = function () {
+        this.loadPoints();
+        this.loadSquares();
+    };
     UserComponent.prototype.saveList = function (name) {
-        this.list.push(name);
-        this.lists.set(name, this.points);
-        console.log("list of map: " + this.lists.size);
-        // this.lists.forEach((key: string, value: Point[]) => {
-        //     console.log(key, value);
-        // });
+        var _this = this;
+        this.lisService.add(point).subscribe(function (point) { return _this.points = point; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
     };
     UserComponent.prototype.deleteList = function (i) {
-        //this.lists.(i, 1);
+    };
+    UserComponent.prototype.removePoint = function (point, id) {
+        var _this = this;
+        this.pointsService.remove(point).subscribe(function (point) { return _this.points = point; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+    };
+    UserComponent.prototype.fileUpload = function (event) {
+        var _this = this;
+        var files = event.target.files;
+        if (files.length > 0) {
+            this.pointsService.upload(files[0]).subscribe(function (point) { return _this.points = point; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+        }
+    };
+    UserComponent.prototype.loadPoints = function () {
+        var _this = this;
+        this.pointsService.get()
+            .subscribe(function (points) { return _this.points = points; }, function (error) { return console.error('Error: ' + error); }, function () { return console.log('Loaded!'); });
+    };
+    UserComponent.prototype.loadSquares = function () {
+        var _this = this;
+        this.squareService.get()
+            .subscribe(function (squares) { return _this.squares = squares; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.toast('Loaded!'); });
     };
     UserComponent.prototype.addPoint = function (x, y) {
-        // send to rest
-        this.postsService.addPoint({ x: x, y: y });
-        // add to the current list
-        //this.points.splice(0, 1, {x, y});
-        this.points.push({ x: x, y: y });
-        console.log("point added: " + "(" + x + "," + y + ")");
-        this.points.forEach(function (element) {
-            console.log("all points: " + "(" + element.x + ", " + element.y + ")");
-        });
-    };
-    UserComponent.prototype.deletePoint = function (p, id) {
-        // delete a point        
-        var index = this.points.indexOf(p);
-        var point = this.points.splice(index, 1)[0];
-        // send to rest
-        this.postsService.deletePoint(p);
-        console.log("deleted point index: " + index);
-        console.log("point deleted: " + "(" + p.x + "," + p.y + ")");
-    };
-    UserComponent.prototype.getPoints = function () {
         var _this = this;
-        this.postsService.getPoints().subscribe(function (points) {
-            _this.points = points;
-        });
-    };
-    UserComponent.prototype.fileChange = function (event) {
-        var fileList = event.target.files;
-        if (fileList.length > 0) {
-            this.postsService.uploadFile(fileList[0]);
+        var point = { x: x, y: y };
+        if (isNaN(point.x) || isNaN(point.x)) {
+            this.toast("Invalid point argument!");
         }
+        else if (this.validation.isLimitExceeded(this.points)) {
+            this.toast("Point limits exceeded!");
+        }
+        else if (!this.validation.isInRange(point)) {
+            this.toast("only range -5000 to 5000 is accepted!");
+        }
+        else if (this.validation.containDuplicate(point, this.points)) {
+            this.toast("duplicates are not allowed!");
+        }
+        else {
+            this.pointsService.add(point).subscribe(function (point) { return _this.points = point; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+        }
+    };
+    UserComponent.prototype.toast = function (message) {
+        console.log(message);
+    };
+    UserComponent.prototype.update = function () {
+        this.loadPoints();
+        this.loadSquares();
     };
     return UserComponent;
 }());
@@ -90,9 +88,39 @@ UserComponent = __decorate([
         moduleId: module.id,
         selector: 'user',
         templateUrl: 'user.component.html',
-        providers: [posts_service_1.PostsService]
+        providers: [posts_service_1.PostsService, points_service_1.PointsService, square_service_1.SquareService]
     }),
-    __metadata("design:paramtypes", [posts_service_1.PostsService])
+    __metadata("design:paramtypes", [posts_service_1.PostsService,
+        points_service_1.PointsService,
+        square_service_1.SquareService])
 ], UserComponent);
 exports.UserComponent = UserComponent;
+var PointValidation = (function () {
+    function PointValidation() {
+    }
+    PointValidation.prototype.isInRange = function (point) {
+        var xValid = point.x <= PointValidation.MAX_RANGE_VALUE
+            && point.x >= PointValidation.MIN_RANGE_VALUE;
+        var yValid = point.y <= PointValidation.MAX_RANGE_VALUE
+            && point.y >= PointValidation.MIN_RANGE_VALUE;
+        return xValid && yValid;
+    };
+    PointValidation.prototype.isLimitExceeded = function (points) {
+        return points.length > PointValidation.MAX_POINTS_AVAILABLE;
+    };
+    PointValidation.prototype.containDuplicate = function (point, points) {
+        var res = false;
+        points.forEach(function (p) {
+            if (p.x == point.x && p.y == point.y) {
+                res = true;
+            }
+        });
+        return res;
+        // return points.indexOf(point) > -1
+    };
+    return PointValidation;
+}());
+PointValidation.MAX_POINTS_AVAILABLE = 10000;
+PointValidation.MIN_RANGE_VALUE = -5000;
+PointValidation.MAX_RANGE_VALUE = 5000;
 //# sourceMappingURL=user.component.js.map

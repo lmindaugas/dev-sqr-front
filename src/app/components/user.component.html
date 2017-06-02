@@ -32,23 +32,7 @@
 </form>-->
 
 <form>
-    <button (click)="importPoints()">import</button>
-    <button (click)="exportPoints()">export</button>
-    <button (click)="saveList()">save</button>
-    <button (click)="loadList()">load</button>
-    <button (click)="manageList()">manage</button>
-    <button (click)="calculateSquares()">squares</button>
-</form>
-
-<div>
-    <input type="file" (change)="fileChange($event)" placeholder="import" accept=".txt">
-</div>
-
-<br />
-<form>
-    <input type="number" name="xVal" #xVal/>
-    <input type="number" name="yVal" #yVal/>
-    <button (click)="addPoint(xVal.value, yVal.value)">+</button>
+    <input type="file" (change)="fileUpload($event)" placeholder="import" accept=".txt">
 </form>
 
 <br />
@@ -57,7 +41,7 @@
     <input type="text" name="ls" #ls/>
     <button (click)="saveList(ls.value)">save</button>
     <ul>
-        <li *ngFor="let item of lists.; let i = index">
+        <li *ngFor="let item of list; let i = index">
             <span (click)="loadList()">{{item}}</span>
             <button (click)="deleteList()">x</button>
         </li>
@@ -65,24 +49,27 @@
 </div>
 
 <br />
-<div><strong>Points</strong></div>
-<div class="row">
-    <div class="medium-8 medium-offset-2 columns">
-        <h2 class="subheader"></h2>
-        <ul>
-            <li *ngFor="let point of points | paginate: { itemsPerPage: pointsPerPage, currentPage: p1, id: 'first' }; let i = index">
-                ({{ point.x }},{{ point.y }})
-                <button (click)="deletePoint(point, i)">x</button>
-            </li>
-        </ul>
-        <pagination-controls (pageChange)="p1 = $event" id="first"></pagination-controls>
+<form>
+    <input type="number" name="x" #xVal/>
+    <input type="number" name="y" #yVal/>
+    <button (click)="addPoint(x.valueAsNumber, y.valueAsNumber)">+</button>
+</form>
 
-        <ul>
-            <li *ngFor="let point of points | paginate: { itemsPerPage: pointsPerPage, currentPage: p2, id: 'second' }"> ... </li>
-        </ul>
-        <pagination-controls (pageChange)="p2 = $event" id="second"></pagination-controls>
-    </div>
-</div>
+<br />
+<div><strong>Points</strong></div>
+<ul>
+    <li *ngFor="let point of points | paginate: { itemsPerPage: pointsPerPage, currentPage: p1, id: 'points-pag' }; let i = index">
+        ({{ point.x }},{{ point.y }})
+        <button (click)="removePoint(point, i)">x</button>
+    </li>
+</ul>
+<pagination-controls (pageChange)="p1 = $event" id="points-pag"></pagination-controls>
+<br />
+<div><strong>Squares</strong></div>
+<ul>
+    <li *ngFor="let square of squares | paginate: { itemsPerPage: pointsPerPage, currentPage: p2, id: 'squares-pag' }"> {{square}} </li>
+</ul>
+<pagination-controls (pageChange)="p2 = $event" id="squares-pag"></pagination-controls>
 
 <!--<hr />
 <h3>Points</h3>

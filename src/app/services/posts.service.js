@@ -45,14 +45,13 @@ var PostsService = (function () {
         this.http.delete(url, options)
             .toPromise()
             .catch(this.handleError);
-        // return this.http
-        //     .delete(url, JSON.stringify(point), options)
-        //     .toPromise()
-        //     .then(() => point)
-        //     .catch(this.handleError);
+    };
+    PostsService.prototype.extractData = function (res) {
+        var body = res.json();
+        return body.data || {};
     };
     PostsService.prototype.handleError = function (error) {
-        console.error('An error occurred', error); // for demo purposes only
+        console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     };
     PostsService.prototype.uploadFile = function (file) {
@@ -61,7 +60,7 @@ var PostsService = (function () {
         formData.append('file', file, file.name);
         var headers = new http_1.Headers();
         // headers.append('Content-Type', 'jsonmultipart/form-data');
-        // headers.append('Accept', 'text/html');
+        // headers.append('Accept', 'text/html'); 
         var options = new http_1.RequestOptions({ headers: headers });
         this.http.put(url, formData, options)
             .map(function (res) { return res.toString(); })

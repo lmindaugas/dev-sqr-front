@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, ResponseContentType } from '@angular/http';
 import { Observable } from "rxjs/Observable";
-import { Point } from "../components/user.component";
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/observable/throw';
+import { Point } from "./points.service";
 
 @Injectable()
 export class PostsService {
@@ -47,16 +47,15 @@ export class PostsService {
         this.http.delete(url, options)
             .toPromise()
             .catch(this.handleError);
+    }
 
-        // return this.http
-        //     .delete(url, JSON.stringify(point), options)
-        //     .toPromise()
-        //     .then(() => point)
-        //     .catch(this.handleError);
+    private extractData(res: Response) {
+        let body = res.json();
+        return body.data || {};
     }
 
     private handleError(error: any): Promise<any> {
-        console.error('An error occurred', error); // for demo purposes only
+        console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     }
 
@@ -67,7 +66,7 @@ export class PostsService {
         formData.append('file', file, file.name);
         let headers = new Headers();
         // headers.append('Content-Type', 'jsonmultipart/form-data');
-        // headers.append('Accept', 'text/html');
+        // headers.append('Accept', 'text/html'); 
         let options = new RequestOptions({ headers: headers });
         this.http.put(url, formData, options)
             .map(res => res.toString())
