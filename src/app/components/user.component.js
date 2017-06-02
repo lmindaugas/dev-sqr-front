@@ -37,7 +37,7 @@ var UserComponent = (function () {
     UserComponent.prototype.loadList = function (list) {
         var _this = this;
         this.listService.load(list)
-            .subscribe(function (points) { return _this.points = points; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.update(); });
+            .subscribe(function (points) { return _this.points = points; }, function (error) { return _this.toast('Error: ' + error); }, function () { return _this.toast("List loaded!"); });
     };
     UserComponent.prototype.loadLists = function () {
         var _this = this;

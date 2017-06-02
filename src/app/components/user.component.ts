@@ -54,7 +54,7 @@ export class UserComponent implements OnInit {
             .subscribe(
             points => this.points = points,
             error => this.toast('Error: ' + error),
-            () => this.update());
+            () => this.toast("List loaded!"));
     }
 
     loadLists() {
